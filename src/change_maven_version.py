@@ -64,6 +64,7 @@ def collect_maven_dirs():
 
     return maven_dirs
 
+
 def main():
 
     maven_home = os.environ["MAVEN_HOME"]
@@ -75,7 +76,9 @@ def main():
     # TODO Is there a better way to perform this check?
     if not maven_dirs:
 
-        exit_with_error("No Maven directory found. What? How did this even...never mind. Just install Maven then get back to me.")
+        exit_with_error(
+            "No Maven directory found. What? How did this even...never mind. Just install Maven then get back to me."
+        )
 
     new_maven_home = select_maven_home(maven_dirs)
 
@@ -89,7 +92,7 @@ def main():
 
     except:
 
-        error_message= f'''{Fore.RED}
+        error_message = f"""{Fore.RED}
 Exception thrown while trying to change MAVEN_HOME environment variable from
 
     {Fore.GREEN}{maven_home.absolute().__str__()}{Fore.RED}
@@ -101,16 +104,16 @@ to
 The error was:{Fore.YELLOW}
 
 {traceback.format_exc()}
-'''
+"""
 
-        exit_with_error(error_message,add_color=False)
+        exit_with_error(error_message, add_color=False)
 
 
-def is_admin(): # https://raccoon.ninja/en/dev/using-python-to-check-if-the-application-is-running-as-an-administrator/
+def is_admin():  # https://raccoon.ninja/en/dev/using-python-to-check-if-the-application-is-running-as-an-administrator/
 
     try:
 
-        is_admin = (os.getuid() == 0)
+        is_admin = os.getuid() == 0
 
     except AttributeError:
 
@@ -118,31 +121,40 @@ def is_admin(): # https://raccoon.ninja/en/dev/using-python-to-check-if-the-appl
 
     return is_admin
 
-def exit_with_error(error_message,add_color=True):
 
-    addl_color = Fore.RED if add_color else ''
+def exit_with_error(error_message, add_color=True):
+
+    addl_color = Fore.RED if add_color else ""
 
     print(addl_color + error_message)
 
     exit(1)
 
+
 def review_requirements():
 
     error_message_requirement_check_dict = {
-        'This script has only been set up to work on Windows, sorry.':lambda : 'Windows' in platform.system(),
-        "!!!!! THIS SCRIPT NEEDS TO BE RAN FROM AN ADMIN COMMAND PROMPT FOR IT TO WORK !!!!!": lambda : is_admin(),
-        "No MAVEN_HOME environment variable found. Set this variable, then try again.": lambda : 'MAVEN_HOME' in os.environ.keys()
+        "This script has only been set up to work on Windows, sorry.": lambda: "Windows"
+        in platform.system(),
+        "!!!!! THIS SCRIPT NEEDS TO BE RAN FROM AN ADMIN COMMAND PROMPT FOR IT TO WORK !!!!!": lambda: is_admin(),
+        "No MAVEN_HOME environment variable found. Set this variable, then try again.": lambda: "MAVEN_HOME"
+        in os.environ.keys(),
     }
 
-    for error_message, requirement_check in error_message_requirement_check_dict.items():
+    for (
+        error_message,
+        requirement_check,
+    ) in error_message_requirement_check_dict.items():
 
         if not requirement_check():
 
             exit_with_error(error_message)
 
+
 def print_banner():
 
-    print(f'''{Fore.GREEN}
+    print(
+        f"""{Fore.GREEN}
                                            
  _____ _____ _____ _____ _____ _____ _____ 
 |     |  _  |     |   __| __  |     |   | |
@@ -150,7 +162,8 @@ def print_banner():
 |_____|__|__|_|_|_|_____|__|__|_____|_|___|
                                            
 {Fore.YELLOW}ChAnge Maven vERsiON{Fore.RESET}
-''')    
+"""
+    )
 
 
 if __name__ == "__main__":
