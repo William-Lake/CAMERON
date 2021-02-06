@@ -1,8 +1,12 @@
-import glob
-import logging
+import ctypes
 from pathlib import Path
+import platform
 import os
 import subprocess
+import traceback
+
+import colorama
+from colorama import Fore, Back, Style
 
 
 def convert_to_num(user_selection):
@@ -41,6 +45,8 @@ def select_maven_home(maven_dirs):
 
 def collect_maven_dirs():
 
+    # TODO Use subprocess and run "where mvn"
+
     maven_dirs = []
 
     for dir in Path(r"C:\Program Files").iterdir():
@@ -58,40 +64,18 @@ def collect_maven_dirs():
 
     return maven_dirs
 
+def main():
 
-if __name__ == "__main__":
+    maven_home = os.environ["MAVEN_HOME"]
 
-    logging.basicConfig(level=logging.INFO)
-
-    print(
-        "!!!!! THIS SCRIPT NEEDS TO BE RAN FROM AN ADMIN COMMAND PROMPT FOR IT TO WORK !!!!!\n\n\n"
-    )
-
-    maven_home = None
-
-    try:
-
-        maven_home = os.environ["MAVEN_HOME"]
-
-    except KeyError as e:
-
-        logging.error(
-            "No MAVEN_HOME environment variable found. Set this variable, then try again."
-        )
-
-        exit(1)
+    print(f"\t---  Current Maven Home is {maven_home}  ---\n\n\n")
 
     maven_dirs = collect_maven_dirs()
 
+    # TODO Is there a better way to perform this check?
     if not maven_dirs:
 
-        logging.error(
-            "No Maven directory found. What? How did this even...never mind. Just install Maven then get back to me."
-        )
-
-        exit(1)
-
-    print(f"\t---  Current Maven Home is {maven_home}  ---\n\n\n")
+        exit_with_error("No Maven directory found. What? How did this even...never mind. Just install Maven then get back to me.")
 
     new_maven_home = select_maven_home(maven_dirs)
 
@@ -105,8 +89,76 @@ if __name__ == "__main__":
 
     except:
 
-        logging.error(
-            "Error thrown when trying to set environment variable. You may need to run this script from an admin prompt."
-        )
+        error_message= f'''{Fore.RED}
+Exception thrown while trying to change MAVEN_HOME environment variable from
 
-        exit(1)
+    {Fore.GREEN}{maven_home.absolute().__str__()}{Fore.RED}
+
+to
+
+    {Fore.GREEN}{new_maven_home.absolute().__str__()}{Fore.RED}
+
+The error was:{Fore.YELLOW}
+
+{traceback.format_exc()}
+'''
+
+        exit_with_error(error_message,add_color=False)
+
+
+def is_admin(): # https://raccoon.ninja/en/dev/using-python-to-check-if-the-application-is-running-as-an-administrator/
+
+    try:
+
+        is_admin = (os.getuid() == 0)
+
+    except AttributeError:
+
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+
+    return is_admin
+
+def exit_with_error(error_message,add_color=True):
+
+    addl_color = Fore.RED if add_color else ''
+
+    print(addl_color + error_message)
+
+    exit(1)
+
+def review_requirements():
+
+    error_message_requirement_check_dict = {
+        'This script has only been set up to work on Windows, sorry.':lambda : 'Windows' in platform.system(),
+        "!!!!! THIS SCRIPT NEEDS TO BE RAN FROM AN ADMIN COMMAND PROMPT FOR IT TO WORK !!!!!": lambda : is_admin(),
+        "No MAVEN_HOME environment variable found. Set this variable, then try again.": lambda : 'MAVEN_HOME' in os.environ.keys()
+    }
+
+    for error_message, requirement_check in error_message_requirement_check_dict.items():
+
+        if not requirement_check():
+
+            exit_with_error(error_message)
+
+def print_banner():
+
+    print(f'''{Fore.GREEN}
+                                           
+ _____ _____ _____ _____ _____ _____ _____ 
+|     |  _  |     |   __| __  |     |   | |
+|   --|     | | | |   __|    -|  |  | | | |
+|_____|__|__|_|_|_|_____|__|__|_____|_|___|
+                                           
+{Fore.YELLOW}ChAnge Maven vERsiON{Fore.RESET}
+''')    
+
+
+if __name__ == "__main__":
+
+    colorama.init()
+
+    print_banner()
+
+    review_requirements()
+
+    main()
