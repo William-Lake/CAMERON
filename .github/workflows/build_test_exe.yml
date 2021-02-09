@@ -21,3 +21,5 @@ jobs:
         run: pyinstaller --onefile change_maven_version.py
       - name: Test Executable
         run: .\dist\change_maven_version.exe -h
+        env:
+          MAVEN_HOME: "test"
