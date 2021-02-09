@@ -1,3 +1,4 @@
 Added test workflow.
 Minor code alteration to make test workflow easier to run.
 Altered directory structure.
+Updated primary workflow to not use the pyinstaller github action anymore.
