@@ -1,1 +1,3 @@
-black reformat
+Added test workflow.
+Minor code alteration to make test workflow easier to run.
+Altered directory structure.
