@@ -4,6 +4,7 @@ import platform
 import os
 import subprocess
 import traceback
+from sys import exit
 
 import colorama
 from colorama import Fore, Back, Style
