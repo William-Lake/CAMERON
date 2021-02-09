@@ -20,9 +20,4 @@ jobs:
       - name: Build EXE
         run: pyinstaller --onefile change_maven_version.py
       - name: Test Executable
-        run: |
-          mkdir "C:\Program Files\maven"
-          echo "maven stuff" > "C:\Program Files\maven\mvn.txt"
-          .\dist\change_maven_version.exe -h
-        env:
-          MAVEN_HOME: "test"
+        run: .\dist\change_maven_version.exe -h

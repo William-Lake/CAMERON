@@ -1,3 +1,4 @@
+from argparse import ArgumentParser,RawTextHelpFormatter
 import ctypes
 from pathlib import Path
 import platform
@@ -66,7 +67,7 @@ def collect_maven_dirs():
     return maven_dirs
 
 
-def main():
+def main(args):
 
     maven_home = os.environ["MAVEN_HOME"]
 
@@ -155,7 +156,8 @@ def review_requirements():
 def print_banner():
 
     print(
-        f"""{Fore.GREEN}
+        f"""
+{Fore.GREEN}
                                            
  _____ _____ _____ _____ _____ _____ _____ 
 |     |  _  |     |   __| __  |     |   | |
@@ -165,14 +167,23 @@ def print_banner():
 {Fore.YELLOW}ChAnge Maven vERsiON{Fore.RESET}
 """
     )
-
+    
+def gather_args():
+    
+    arg_parser = ArgumentParser(description='Changes your maven version.',formatter_class=RawTextHelpFormatter,prog="CAMERON.exe")
+    
+    arg_parser.add_argument('-v',action='store_true',dest='verbose',help='Whether to log verbose actions.') # TODO
+    
+    return arg_parser.parse_args()
 
 if __name__ == "__main__":
 
     colorama.init()
 
     print_banner()
+    
+    args = gather_args()
 
     review_requirements()
 
-    main()
+    main(args)
