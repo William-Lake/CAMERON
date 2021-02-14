@@ -22,7 +22,7 @@ jobs:
           python -m pip install pyinstaller
           python -m pip install -r requirements.txt
       - name: Build EXE
-        run: pyinstaller --onefile change_maven_version.py
+        run: pyinstaller --onefile --icon=CAMERON.ico change_maven_version.py
       - name: Move Executable
         run: move dist/change_maven_version.exe CAMERON.exe
       - name: Create Release
